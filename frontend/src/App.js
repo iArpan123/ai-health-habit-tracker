@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from "react";
-import api from "./services/api";
+import React from "react";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Profile from "./components/Profile";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    api.get("/hello")
-      .then(res => setMessage(res.data))
-      .catch(err => console.error(err));
-  }, []);
-
   return (
     <div>
-      <h1>React + Spring Boot Test</h1>
-      <p>{message}</p>
+      <h1>AI Health & Habit Tracker</h1>
+      <Register />
+      <Login />
+      <Profile />
     </div>
   );
 }
