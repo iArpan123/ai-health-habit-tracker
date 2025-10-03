@@ -2,11 +2,15 @@ package com.aihealth.ai_health_habit_tracker.controller;
 
 import com.aihealth.ai_health_habit_tracker.model.User;
 import com.aihealth.ai_health_habit_tracker.repository.UserRepository;
-import com.aihealth.ai_health_habit_tracker.config.JwtUtil;
+import com.aihealth.ai_health_habit_tracker.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -19,21 +23,40 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Register
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // ✅ Register endpoint
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public ResponseEntity<?> register(@RequestBody User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Email already registered!"));
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // hash password
         userRepository.save(user);
-        return "User registered successfully!";
+
+        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
 
-    // Login
+    // ✅ Login endpoint
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        Optional<User> dbUser = userRepository.findByEmail(user.getEmail());
-        if (dbUser.isPresent() && passwordEncoder.matches(user.getPassword(), dbUser.get().getPassword())) {
-            return JwtUtil.generateToken(user.getEmail());
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                String token = jwtUtil.generateToken(user.getEmail());
+
+                // ✅ Return JSON instead of raw string
+                return ResponseEntity.ok(Map.of("token", token));
+            }
         }
-        return "Invalid credentials!";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
     }
+
+
 }
