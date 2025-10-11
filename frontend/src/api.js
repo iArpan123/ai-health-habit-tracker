@@ -1,51 +1,50 @@
 import axios from "axios";
 
-// Backend base URL
+// Axios instance
 const API = axios.create({
-  baseURL: "http://localhost:8080", // Spring Boot backend
+  baseURL: "http://localhost:8080",
+  timeout: 15000,
 });
 
-// Add token to every request if it exists
+// Attach token to every request
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    console.log("Attaching token:", token); // Debugging
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// ============================
-// Auth APIs
-// ============================
+// Optional: handle 401 globally (no alerts)
+API.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error?.response?.status === 401) {
+      // Keep it quiet: just remove token so ProtectedRoute kicks in
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(error);
+  }
+);
 
-// Register new user
+// ============ AUTH ============
 export const register = (username, email, password) =>
   API.post("/auth/register", { username, email, password });
 
-// Login user and save token in localStorage
 export const login = async (email, password) => {
   const res = await API.post("/auth/login", { email, password });
-
-  // Always overwrite token in localStorage
-  if (res.data && res.data.token) {
-    localStorage.setItem("token", res.data.token);
-    console.log("New token saved:", res.data.token);
-  } else {
-    console.error("No token returned from backend");
-  }
-
+  if (res.data?.token) localStorage.setItem("token", res.data.token);
   return res;
 };
 
-// Logout user (clear token)
 export const logout = () => {
   localStorage.removeItem("token");
-  console.log("Token removed, logged out");
 };
 
-// Profile API (protected)
 export const getProfile = () => API.get("/profile");
 
+// ============ HABITS ==========
+export const createHabit = (habit) => API.post("/habits", habit);
+export const getHabits = () => API.get("/habits");
+export const completeHabit = (id) => API.patch(`/habits/${id}/complete`);
+export const deleteHabit = (id) => API.delete(`/habits/${id}`);
+
 export default API;
- 
