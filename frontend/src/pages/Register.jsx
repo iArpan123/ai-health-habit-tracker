@@ -1,55 +1,64 @@
 import React, { useState } from "react";
-import { register } from "../api";
-import Spinner from "../components/Spinner";
-import { useToast } from "../components/ToastProvider";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase/supabaseClient";
+import { useNavigate, Link } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
+import "./Auth.css";
 
 export default function Register() {
-  const [username, setUsername] = useState("");
-  const [email,    setEmail]    = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setBusy(true);
-    try {
-      await register(username, email, password);
-      toast.success("Account created. Please log in.");
+    setErr("");
+    setSubmitting(true);
+
+    // If you re-enabled email confirmation, show a friendly note after sign-up
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
+
+    setSubmitting(false);
+    if (error) {
+      setErr(error.message);
+      toast.push(error.message, "error");
+    } else {
+      toast.push("Account created! You can login now.", "success");
       navigate("/login");
-    } catch (err) {
-      toast.error("Registration failed");
-    } finally {
-      setBusy(false);
     }
   };
 
   return (
-    <div className="container">
-      <div className="panel" style={{ maxWidth: 520, margin: "40px auto", padding: 20 }}>
-        <div className="section-title">Create Account</div>
-        <form onSubmit={handleRegister} className="v-stack">
-          <div>
-            <div className="label">Username</div>
-            <input className="input" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="your handle" />
-          </div>
-          <div>
-            <div className="label">Email</div>
-            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-          </div>
-          <div>
-            <div className="label">Password</div>
-            <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-          </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <button className="btn" type="submit" disabled={busy}>
-              {busy ? <span className="h-stack"><Spinner /> Creating…</span> : "Register"}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="auth-container fade-in neon-card">
+      <h2 className="glow">Create Account</h2>
+      <form onSubmit={handleRegister} className="form-grid">
+        <div className="field">
+          <label>Full Name</label>
+          <input type="text" placeholder="Jane Doe" onChange={(e) => setName(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label>Email</label>
+          <input type="email" placeholder="you@example.com" onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+
+        {err && <div className="form-error">{err}</div>}
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? <span className="btn-spinner" /> : "Register"}
+        </button>
+      </form>
+      <p>Already have an account? <Link to="/login">Login</Link></p>
     </div>
   );
 }

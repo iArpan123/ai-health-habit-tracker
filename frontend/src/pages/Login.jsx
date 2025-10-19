@@ -1,50 +1,52 @@
 import React, { useState } from "react";
-import { login } from "../api";
-import Spinner from "../components/Spinner";
-import { useToast } from "../components/ToastProvider";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase/supabaseClient";
+import { useNavigate, Link } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
+import "./Auth.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState("");
   const toast = useToast();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setBusy(true);
-    try {
-      await login(email, password);
-      toast.success("Welcome back!");
-      navigate("/habits", { replace: true });
-    } catch (err) {
-      toast.error("Invalid credentials");
-    } finally {
-      setBusy(false);
+    setErr("");
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setSubmitting(false);
+    if (error) {
+      setErr(error.message);
+      toast.push(error.message, "error");
+    } else {
+      toast.push("Welcome back!", "success");
+      navigate("/habits");
     }
   };
 
   return (
-    <div className="container">
-      <div className="panel" style={{ maxWidth: 520, margin: "40px auto", padding: 20 }}>
-        <div className="section-title">Login</div>
-        <form onSubmit={handleLogin} className="v-stack">
-          <div>
-            <div className="label">Email</div>
-            <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-          </div>
-          <div>
-            <div className="label">Password</div>
-            <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-          </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <button className="btn" type="submit" disabled={busy}>
-              {busy ? <span className="h-stack"><Spinner /> Signing in…</span> : "Login"}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="auth-container fade-in neon-card">
+      <h2 className="glow">Welcome Back</h2>
+      <form onSubmit={handleLogin} className="form-grid">
+        <div className="field">
+          <label>Email</label>
+          <input type="email" placeholder="you@example.com" onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+
+        {err && <div className="form-error">{err}</div>}
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? <span className="btn-spinner" /> : "Login"}
+        </button>
+      </form>
+      <p>Don’t have an account? <Link to="/register">Register</Link></p>
     </div>
   );
 }

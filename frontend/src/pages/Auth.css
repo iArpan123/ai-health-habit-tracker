@@ -1,0 +1,57 @@
+.auth-container {
+  max-width: 440px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: linear-gradient(180deg, rgba(27,27,28,.85), rgba(18,18,20,.85));
+  border-radius: 16px;
+  border: 1px solid #262626;
+  position: relative;
+  overflow: hidden;
+}
+.neon-card::before{
+  content:"";
+  position:absolute; inset:-1px;
+  background: radial-gradient(600px 120px at -10% -10%, rgba(0,191,255,.15), transparent 40%),
+              radial-gradient(600px 120px at 110% 110%, rgba(255,0,150,.15), transparent 40%);
+  pointer-events:none;
+}
+.glow { text-align:center; color:#f1f1f1; margin-bottom:1.5rem; text-shadow:0 0 20px rgba(0,191,255,.2); }
+
+.form-grid { display:grid; gap: 0.9rem; }
+.field { display:grid; gap:6px; }
+.field label { font-size: .9rem; color:#bfbfbf; }
+.field input {
+  width: 100%; padding: 12px 14px;
+  background: #141416; color: #f1f1f1;
+  border: 1px solid #2a2a2d; border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus { border-color:#00bfff; box-shadow:0 0 0 3px rgba(0,191,255,.12); }
+
+button {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: linear-gradient(90deg,#00bfff,#6e5dff);
+  border: none; color: white; font-weight: 600;
+  cursor: pointer; transition: transform .15s ease, opacity .2s;
+}
+button:hover { transform: translateY(-1px); }
+button:disabled { opacity:.6; cursor:not-allowed; }
+
+.btn-spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.25);
+  border-top-color: #fff; display:inline-block;
+  animation: spin 0.8s linear infinite; vertical-align: middle;
+}
+
+.form-error {
+  background: rgba(255,77,79,.1); color:#ffb3b4;
+  border:1px solid rgba(255,77,79,.2); padding:10px 12px;
+  border-radius:10px; font-size:.9rem;
+}
+
+.neon-card:hover {
+  box-shadow: 0 0 30px rgba(0,191,255,0.1);
+  transform: translateY(-2px);
+}
+

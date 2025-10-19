@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0c;           /* deep base */
+  color: #f1f1f1;
+  transition: background 0.3s ease;
+  min-height: 100vh;
+  background-attachment: fixed;  /* keep gradient stationary */
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  background:
+    radial-gradient(800px 400px at 5% 0%, rgba(0,191,255,0.15), transparent 60%),
+    radial-gradient(800px 400px at 95% 100%, rgba(180,0,255,0.15), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* === Global Glass Card === */
+.glass-card {
+  background: linear-gradient(180deg, rgba(27,27,28,.85), rgba(18,18,20,.85));
+  border-radius: 16px;
+  border: 1px solid #262626;
+  padding: 2rem;
+  box-shadow: 0 0 40px rgba(0,191,255,0.05);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(0,191,255,0.12);
+}
+
+/* Frequency color legend */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+  color: #fff;
+}
+.badge.min { background: #0080ff; }
+.badge.hour { background: #6e5dff; }
+.badge.day { background: #00b894; }
+.badge.week { background: #ff7675; }
+.badge.custom { background: #ffa502; }

@@ -1,0 +1,39 @@
+.navbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 14px 24px; position: sticky; top:0; z-index: 10;
+  border-bottom: 1px solid #232326;
+}
+.glass {
+  background: rgba(12,12,14,0.55);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-left .logo {
+  font-size: 1.2rem; font-weight: 800;
+  background: linear-gradient(90deg,#00bfff,#6e5dff);
+  -webkit-background-clip:text; background-clip:text; color: transparent;
+  text-shadow: 0 0 18px rgba(0,191,255,.25);
+}
+.nav-right { display:flex; gap: 12px; align-items:center; }
+.nav-right a {
+  color:#d9d9e3; text-decoration:none; padding:8px 12px; border-radius:10px;
+  transition: background .2s, color .2s;
+}
+.nav-right a:hover { background:#1e1f22; color:#fff; }
+.nav-right a.active { background:#24252a; color:#fff; border:1px solid #2e2f35; }
+
+.nav-right button {
+  background: #ff4d4f; color:#fff; border:none; padding:8px 12px; border-radius:10px;
+  cursor:pointer; transition: transform .15s ease, background .2s;
+}
+.nav-right button:hover { transform: translateY(-1px); background:#e04445; }
+
+.avatar {
+  width:34px; height:34px; border-radius:50%;
+  background: linear-gradient(135deg,#1e2026,#121317);
+  display:grid; place-items:center;
+  border:1px solid #2b2c30; color:#cfd3da; font-size:.8rem; font-weight:700;
+  box-shadow: inset 0 0 10px rgba(0,191,255,.08), 0 0 20px rgba(110,93,255,.12);
+}

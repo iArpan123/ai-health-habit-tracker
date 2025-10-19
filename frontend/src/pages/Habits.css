@@ -1,0 +1,273 @@
+/* 🌌 ==========================
+   AI Health Habit Tracker Styles
+   ========================== */
+
+/* ✨ Completed habit animation */
+.habit-item.completed {
+  background: linear-gradient(90deg, rgba(0, 255, 128, 0.15), rgba(0, 191, 80, 0.15));
+  border-color: rgba(0, 255, 128, 0.35);
+  transition: background 0.3s, border-color 0.3s;
+  box-shadow: 0 0 12px rgba(0, 255, 128, 0.2);
+}
+.habit-item.completed .title {
+  text-decoration: line-through;
+  color: #a0ffa7;
+}
+
+/* 🟢 Check button */
+.check {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #444;
+  background: transparent;
+  color: transparent;
+  margin-top: 2px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.check.active {
+  background: #00e676;
+  color: #fff;
+  border-color: #00e676;
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+}
+.check:hover {
+  border-color: #00bfff;
+}
+
+/* 🔥 Streak icon */
+.streak {
+  color: #ffb347;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: 6px;
+  text-shadow: 0 0 5px rgba(255, 180, 70, 0.5);
+}
+
+/* =====================
+   Form Section
+   ===================== */
+.habit-form.enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+  background: rgba(12, 12, 12, 0.8);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.05);
+  backdrop-filter: blur(15px);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-group.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.field-label {
+  color: #aab7c4;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+
+.glow-input,
+.glow-select {
+  background: #161617;
+  border: 1px solid #2c2c2e;
+  color: #e6e6e6;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  width: 100%;
+}
+
+.glow-input:focus,
+.glow-select:focus {
+  border-color: #00bfff;
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+.glow-select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.glow-select option {
+  background: #1b1b1c;
+  color: #fff;
+}
+
+/* 🧭 Time & Day pickers */
+.time-picker,
+.day-picker {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #2b2b2c;
+  color: #f1f1f1;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.time-picker:focus,
+.day-picker:focus {
+  border-color: #00bfff;
+}
+
+/* ✨ Buttons */
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.btn-glow {
+  width: 100%;
+  background: linear-gradient(90deg, #00bfff, #6f6bff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
+}
+.btn-glow:hover {
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-cancel {
+  background: #2b2b2c;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-cancel:hover {
+  background: #333;
+  border-color: #666;
+}
+
+/* Hide old legend */
+.legend {
+  display: none !important;
+}
+
+/* =====================
+   Habit List Section
+   ===================== */
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+/* Habit item card */
+.habit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(0, 30, 60, 0.7), rgba(60, 0, 120, 0.7));
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.05);
+}
+.habit-item:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, rgba(0, 80, 160, 0.7), rgba(120, 60, 255, 0.7));
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.25);
+}
+
+/* Left section */
+.item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.item-left .title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+.item-left .note {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-top: 0.2rem;
+}
+
+/* Frequency/time badges */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+.badge.day {
+  background: rgba(0, 191, 255, 0.2);
+  color: #00bfff;
+}
+.badge.week {
+  background: rgba(123, 97, 255, 0.2);
+  color: #7b61ff;
+}
+.badge.hour {
+  background: rgba(0, 255, 180, 0.2);
+  color: #00ffa8;
+}
+
+/* Right actions */
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 100px;
+  justify-content: flex-end;
+}
+.item-actions button {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+.item-actions button:hover {
+  color: #fff;
+  transform: scale(1.2);
+}
+
+/* Responsive fix */
+@media (max-width: 700px) {
+  .habit-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  .item-actions {
+    align-self: flex-end;
+    margin-top: 0.5rem;
+  }
+}
