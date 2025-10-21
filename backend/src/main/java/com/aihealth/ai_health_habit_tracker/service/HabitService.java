@@ -27,7 +27,7 @@ public class HabitService {
         return habitRepository.save(habit);
     }
 
-    // ✅ Update existing habit (optional for later)
+    // ✅ Update existing habit
     public Habit updateHabit(String email, Long id, Habit updated) {
         Habit existing = habitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habit not found"));
@@ -56,5 +56,24 @@ public class HabitService {
         }
 
         habitRepository.delete(habit);
+    }
+
+    // ✅ Toggle habit completion
+    public Habit toggleHabit(Long id, String email) {
+        Habit habit = habitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Habit not found"));
+
+        if (!habit.getUserEmail().equals(email)) {
+            throw new RuntimeException("Unauthorized to modify this habit");
+        }
+
+        habit.setCompleted(!habit.isCompleted());
+
+        if (habit.isCompleted()) {
+            habit.setStreak(habit.getStreak() + 1);
+            habit.setLastCompletedAt(Instant.now());
+        }
+
+        return habitRepository.save(habit);
     }
 }

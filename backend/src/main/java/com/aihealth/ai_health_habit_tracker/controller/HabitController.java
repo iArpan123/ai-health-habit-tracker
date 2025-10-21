@@ -3,6 +3,7 @@ package com.aihealth.ai_health_habit_tracker.controller;
 import com.aihealth.ai_health_habit_tracker.entity.Habit;
 import com.aihealth.ai_health_habit_tracker.service.HabitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,20 +31,31 @@ public class HabitController {
         return habitService.createHabit(email, habit);
     }
 
-    // ✅ Update habit (optional for later)
+    // ✅ Update habit
     @PutMapping("/{id}")
-    public Habit updateHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
-                             @PathVariable Long id,
-                             @RequestBody Habit updated) {
+    public ResponseEntity<Habit> updateHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
+                                             @PathVariable Long id,
+                                             @RequestBody Habit updated) {
         String email = jwt.getClaim("email");
-        return habitService.updateHabit(email, id, updated);
+        Habit habit = habitService.updateHabit(email, id, updated);
+        return ResponseEntity.ok(habit);
     }
 
     // ✅ Delete habit
     @DeleteMapping("/{id}")
-    public void deleteHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
-                            @PathVariable Long id) {
+    public ResponseEntity<Void> deleteHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
+                                            @PathVariable Long id) {
         String email = jwt.getClaim("email");
         habitService.deleteHabit(id, email);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ✅ Toggle habit completion
+    @PatchMapping("/{id}/toggle")
+    public ResponseEntity<Habit> toggleHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
+                                             @PathVariable Long id) {
+        String email = jwt.getClaim("email");
+        Habit habit = habitService.toggleHabit(id, email);
+        return ResponseEntity.ok(habit);
     }
 }

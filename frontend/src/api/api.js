@@ -10,8 +10,10 @@ API.interceptors.request.use(async (config) => {
   return config;
 });
 
+// ✅ Backend endpoints
 export const getProfile = () => API.get("/profile");
 export const getHabits = () => API.get("/habits");
 export const createHabit = (habit) => API.post("/habits", habit);
+export const updateHabit = (id, habit) => API.put(`/habits/${id}`, habit);
+export const deleteHabit = (id) => API.delete(`/habits/${id}`);
 export const toggleHabit = (id) => API.patch(`/habits/${id}/toggle`);
-

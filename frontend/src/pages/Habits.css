@@ -15,23 +15,38 @@
 }
 
 /* 🟢 Check button */
+/* 🌟 Replace old toggle with modern glowing one */
 .check {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid #444;
-  background: transparent;
-  color: transparent;
-  margin-top: 2px;
-  margin-right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  background: rgba(30, 30, 30, 0.8);
   cursor: pointer;
-  transition: all 0.25s ease;
+  position: relative;
+  transition: all 0.3s ease;
 }
-.check.active {
-  background: #00e676;
+
+.check::before {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
   color: #fff;
-  border-color: #00e676;
-  box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.25s ease;
+}
+
+.check.active {
+  background: linear-gradient(135deg, #00bfff, #6f6bff);
+  border-color: #00bfff;
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.6);
+}
+
+.check.active::before {
+  transform: translate(-50%, -50%) scale(1);
 }
 .check:hover {
   border-color: #00bfff;
@@ -91,15 +106,15 @@
   width: 100%;
 }
 
-.glow-input:focus,
+.glow-select {
+  transition: all 0.3s ease;
+  background: #151516;
+  border: 1px solid #333;
+}
+.glow-select:hover,
 .glow-select:focus {
   border-color: #00bfff;
-  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
-}
-
-.glow-select {
-  appearance: none;
-  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
 }
 
 .glow-select option {
@@ -179,6 +194,7 @@
 
 /* Habit item card */
 .habit-item {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -189,7 +205,38 @@
   border: 1px solid rgba(0, 191, 255, 0.2);
   transition: all 0.3s ease;
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.05);
+  overflow: hidden;
 }
+
+/* 💫 AI shimmer animation */
+.habit-item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.6s ease;
+}
+.habit-item:hover::after {
+  animation: shimmer 1.8s forwards;
+}
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
 .habit-item:hover {
   transform: translateY(-3px);
   background: linear-gradient(90deg, rgba(0, 80, 160, 0.7), rgba(120, 60, 255, 0.7));
@@ -218,24 +265,34 @@
 
 /* Frequency/time badges */
 .badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-weight: 600;
-  margin-top: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 0 5px rgba(0, 191, 255, 0.15);
+  transition: all 0.2s ease;
 }
+
 .badge.day {
-  background: rgba(0, 191, 255, 0.2);
-  color: #00bfff;
-}
-.badge.week {
-  background: rgba(123, 97, 255, 0.2);
-  color: #7b61ff;
+  background: linear-gradient(90deg, #00bfff33, #00ffa833);
+  color: #00f6ff;
 }
 .badge.hour {
-  background: rgba(0, 255, 180, 0.2);
-  color: #00ffa8;
+  background: linear-gradient(90deg, #6f6bff33, #a44fff33);
+  color: #a48bff;
+}
+.badge.week {
+  background: linear-gradient(90deg, #ffb34733, #ff6f6133);
+  color: #ffb347;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.3);
 }
 
 /* Right actions */
@@ -270,4 +327,20 @@
     align-self: flex-end;
     margin-top: 0.5rem;
   }
+}
+
+/* ✨ Action button polish */
+.item-actions button.edit:hover {
+  color: #00bfff;
+  text-shadow: 0 0 6px rgba(0,191,255,0.6);
+}
+
+.item-actions button.del:hover {
+  color: #ff5c5c;
+  text-shadow: 0 0 6px rgba(255,80,80,0.6);
+}
+
+.item-actions button:active {
+  transform: scale(0.9);
+  opacity: 0.8;
 }
