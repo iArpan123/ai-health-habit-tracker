@@ -12,19 +12,32 @@ import { supabase } from "./supabase/supabaseClient";
 import "./styles/global.css";
 import "./styles/animations.css";
 
+/**
+ * 🌐 Main App Component
+ * Handles routing, authentication providers, and push notification registration.
+ */
 function App() {
   useEffect(() => {
+    /**
+     * 🔔 Registers the service worker and subscribes the logged-in user
+     * for web push notifications using the backend endpoint.
+     */
     async function registerPush() {
+      // Exit early if Push or Service Worker API is unsupported
       if (!("serviceWorker" in navigator && "PushManager" in window)) return;
 
       try {
+        // Register the service worker for handling notifications
         const reg = await navigator.serviceWorker.register("/service-worker.js");
+
+        // Request notification permission from user
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
           console.warn("Notifications not granted");
           return;
         }
 
+        // Subscribe the user using your backend’s VAPID public key
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(
@@ -32,22 +45,15 @@ function App() {
           ),
         });
 
-        // ✅ Wait until user is logged in to get email
+        // Wait for user login (we attach email to push subscription)
         const { data: userData } = await supabase.auth.getUser();
         const email = userData?.user?.email;
         if (!email) {
-          console.log("No email found, user not logged in yet");
+          console.log("No email found — user not logged in yet");
           return;
         }
 
-        console.log("🔍 Push body:", {
-  userEmail: email,
-  endpoint: sub.endpoint,
-  keys: sub.toJSON().keys
-});
-
-
-        // Send to backend
+        // Send subscription details to backend
         await fetch("http://localhost:8080/push/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -64,6 +70,7 @@ function App() {
       }
     }
 
+    // Utility: convert base64 → Uint8Array (required for push key)
     function urlBase64ToUint8Array(base64String) {
       const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
       const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -75,7 +82,7 @@ function App() {
     }
 
     registerPush();
-  }, []); // runs once when app mounts
+  }, []); // Run once when the app mounts
 
   return (
     <BrowserRouter>

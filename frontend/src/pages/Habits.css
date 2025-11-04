@@ -14,8 +14,7 @@
   color: #a0ffa7;
 }
 
-/* 🟢 Check button */
-/* 🌟 Replace old toggle with modern glowing one */
+/* 🟢 Habit toggle button */
 .check {
   width: 28px;
   height: 28px;
@@ -26,7 +25,6 @@
   position: relative;
   transition: all 0.3s ease;
 }
-
 .check::before {
   content: "✓";
   position: absolute;
@@ -38,13 +36,11 @@
   font-size: 1rem;
   transition: transform 0.25s ease;
 }
-
 .check.active {
   background: linear-gradient(135deg, #00bfff, #6f6bff);
   border-color: #00bfff;
   box-shadow: 0 0 12px rgba(0, 191, 255, 0.6);
 }
-
 .check.active::before {
   transform: translate(-50%, -50%) scale(1);
 }
@@ -52,7 +48,7 @@
   border-color: #00bfff;
 }
 
-/* 🔥 Streak icon */
+/* 🔥 Streak display */
 .streak {
   color: #ffb347;
   font-weight: 600;
@@ -81,19 +77,18 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .field-group.inline {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
-
 .field-label {
   color: #aab7c4;
   font-size: 0.9rem;
   letter-spacing: 0.3px;
 }
 
+/* ✨ Inputs and selects */
 .glow-input,
 .glow-select {
   background: #161617;
@@ -105,9 +100,7 @@
   transition: all 0.25s ease;
   width: 100%;
 }
-
 .glow-select {
-  transition: all 0.3s ease;
   background: #151516;
   border: 1px solid #333;
 }
@@ -116,7 +109,6 @@
   border-color: #00bfff;
   box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
 }
-
 .glow-select option {
   background: #1b1b1c;
   color: #fff;
@@ -138,13 +130,12 @@
   border-color: #00bfff;
 }
 
-/* ✨ Buttons */
+/* ✨ Action buttons */
 .actions {
   display: flex;
   gap: 0.8rem;
   align-items: center;
 }
-
 .btn-glow {
   width: 100%;
   background: linear-gradient(90deg, #00bfff, #6f6bff);
@@ -161,7 +152,6 @@
   box-shadow: 0 0 25px rgba(0, 191, 255, 0.6);
   transform: translateY(-1px);
 }
-
 .btn-cancel {
   background: #2b2b2c;
   color: #ccc;
@@ -174,11 +164,6 @@
 .btn-cancel:hover {
   background: #333;
   border-color: #666;
-}
-
-/* Hide old legend */
-.legend {
-  display: none !important;
 }
 
 /* =====================
@@ -208,7 +193,7 @@
   overflow: hidden;
 }
 
-/* 💫 AI shimmer animation */
+/* 💫 Shimmer animation */
 .habit-item::after {
   content: "";
   position: absolute;
@@ -236,14 +221,13 @@
     left: 150%;
   }
 }
-
 .habit-item:hover {
   transform: translateY(-3px);
   background: linear-gradient(90deg, rgba(0, 80, 160, 0.7), rgba(120, 60, 255, 0.7));
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.25);
 }
 
-/* Left section */
+/* Layout details */
 .item-left {
   display: flex;
   align-items: flex-start;
@@ -251,7 +235,6 @@
   flex: 1;
   overflow: hidden;
 }
-
 .item-left .title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -263,7 +246,7 @@
   margin-top: 0.2rem;
 }
 
-/* Frequency/time badges */
+/* Frequency badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -276,7 +259,6 @@
   box-shadow: 0 0 5px rgba(0, 191, 255, 0.15);
   transition: all 0.2s ease;
 }
-
 .badge.day {
   background: linear-gradient(90deg, #00bfff33, #00ffa833);
   color: #00f6ff;
@@ -289,13 +271,12 @@
   background: linear-gradient(90deg, #ffb34733, #ff6f6133);
   color: #ffb347;
 }
-
 .badge:hover {
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(0, 191, 255, 0.3);
 }
 
-/* Right actions */
+/* Right-side actions */
 .item-actions {
   display: flex;
   align-items: center;
@@ -316,7 +297,7 @@
   transform: scale(1.2);
 }
 
-/* Responsive fix */
+/* Responsive */
 @media (max-width: 700px) {
   .habit-item {
     flex-direction: column;
@@ -332,14 +313,12 @@
 /* ✨ Action button polish */
 .item-actions button.edit:hover {
   color: #00bfff;
-  text-shadow: 0 0 6px rgba(0,191,255,0.6);
+  text-shadow: 0 0 6px rgba(0, 191, 255, 0.6);
 }
-
 .item-actions button.del:hover {
   color: #ff5c5c;
-  text-shadow: 0 0 6px rgba(255,80,80,0.6);
+  text-shadow: 0 0 6px rgba(255, 80, 80, 0.6);
 }
-
 .item-actions button:active {
   transform: scale(0.9);
   opacity: 0.8;

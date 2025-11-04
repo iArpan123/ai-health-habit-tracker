@@ -1,12 +1,14 @@
-/* ===============================
-   🧠 AI Health Habit Tracker SW
-   =============================== */
+/* ==========================================
+   AI Health Habit Tracker - Service Worker
+   Handles push notifications and user actions
+   ========================================== */
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;
   const data = event.data.json();
-  console.log("📩 Push received:", data);
+  console.log("Push received:", data);
 
+  // Simple motivational messages
   const msgs = [
     "Small steps lead to big change 💪",
     "Stay consistent — you’ve got this 🌟",
@@ -29,7 +31,7 @@ self.addEventListener("push", (event) => {
     actions: [
       { action: "done", title: "✅ Mark Complete" },
       { action: "snooze", title: "🕓 Remind me later" },
-      { action: "skip", title: "🚫 Can't do it this time" },
+      { action: "skip", title: "🚫 Skip this one" },
     ],
   };
 
@@ -38,7 +40,6 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
   const habitId = event.notification.data?.habitId;
   if (!habitId) return;
 
@@ -58,12 +59,12 @@ self.addEventListener("notificationclick", (event) => {
       return;
   }
 
-  // 🔄 Tell backend what the user clicked
+  // Notify backend about user action
   event.waitUntil(
     fetch(`http://localhost:8080${endpoint}`, { method: "PATCH" })
       .then(() => {
-        console.log(`✅ ${event.action} processed for habit ${habitId}`);
-        // tell open tabs to refresh
+        console.log(`${event.action} processed for habit ${habitId}`);
+        // Notify open tabs to refresh
         clients.matchAll({ type: "window" }).then((tabs) =>
           tabs.forEach((tab) =>
             tab.postMessage({ type: "REFRESH_HABITS" })
@@ -71,16 +72,18 @@ self.addEventListener("notificationclick", (event) => {
         );
       })
       .catch((err) =>
-        console.error(`❌ Failed to process ${event.action} for habit ${habitId}`, err)
+        console.error(`Failed to process ${event.action} for habit ${habitId}`, err)
       )
   );
 });
 
+// Lifecycle events for SW
 self.addEventListener("install", () => {
-  console.log("Service Worker installed 🚀");
+  console.log("Service Worker installed");
   self.skipWaiting();
 });
+
 self.addEventListener("activate", (e) => {
-  console.log("Service Worker activated ✨");
+  console.log("Service Worker activated");
   e.waitUntil(clients.claim());
 });

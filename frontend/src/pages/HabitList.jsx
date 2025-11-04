@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { getHabits, createHabit, updateHabit, deleteHabit, toggleHabit } from "../api/api";
+import {
+  getHabits,
+  createHabit,
+  updateHabit,
+  deleteHabit,
+  toggleHabit,
+} from "../api/api";
 import { useToast } from "../context/ToastContext";
 import "./Habits.css";
 import useHabitReminder from "../hooks/useHabitReminder";
-
 
 export default function HabitList() {
   const [habits, setHabits] = useState([]);
@@ -15,14 +20,14 @@ export default function HabitList() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  // ✅ Request permission for browser notifications
+  // Ask browser permission for notifications
   useEffect(() => {
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
   }, []);
 
-  // ✅ Fetch habits
+  // Load all user habits on mount
   useEffect(() => {
     getHabits()
       .then((res) => {
@@ -32,12 +37,13 @@ export default function HabitList() {
       .catch((err) => console.error("Error fetching habits:", err));
   }, []);
 
+  // Refresh habit list whenever reminder updates
   useHabitReminder(habits, async () => {
-  const res = await getHabits();
-  setHabits(res.data);
-});
+    const res = await getHabits();
+    setHabits(res.data);
+  });
 
-
+  // Display different badge colors for frequency
   const getBadgeClass = (f) => {
     if (f.includes("m")) return "min";
     if (f.includes("h")) return "hour";
@@ -48,11 +54,12 @@ export default function HabitList() {
 
   const effectiveFreq = custom.trim() || freq;
 
-  // ✅ Add or update habit (persisted in DB)
+  // Create or update habit in DB
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
     if (!name.trim()) return toast.push("Please enter a habit name", "error");
     setLoading(true);
+
     try {
       if (editing) {
         const updated = { ...editing, name, description: note, frequency: effectiveFreq };
@@ -70,14 +77,14 @@ export default function HabitList() {
       }
       resetForm();
     } catch (err) {
-      toast.push("Action failed", "error");
       console.error("Add/Update Error:", err);
+      toast.push("Action failed", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Delete habit from DB + UI
+  // Delete habit from database and UI
   const handleDelete = async (id) => {
     if (window.confirm("Delete this habit?")) {
       try {
@@ -91,7 +98,7 @@ export default function HabitList() {
     }
   };
 
-  // ✅ Toggle completion (persist in DB)
+  // Toggle completion status for a habit
   const handleToggle = async (id) => {
     try {
       const res = await toggleHabit(id);
@@ -103,17 +110,18 @@ export default function HabitList() {
     }
   };
 
+  // Update UI when service worker triggers habit refresh
   useEffect(() => {
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.addEventListener("message", (event) => {
-      if (event.data?.type === "REFRESH_HABITS") {
-        getHabits().then((res) => setHabits(res.data));
-      }
-    });
-  }
-}, []);
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "REFRESH_HABITS") {
+          getHabits().then((res) => setHabits(res.data));
+        }
+      });
+    }
+  }, []);
 
-
+  // Load selected habit into form for editing
   const handleEdit = (habit) => {
     setEditing(habit);
     setName(habit.name);
@@ -121,6 +129,7 @@ export default function HabitList() {
     setFreq(habit.frequency);
   };
 
+  // Reset form fields
   const resetForm = () => {
     setName("");
     setNote("");
@@ -129,7 +138,7 @@ export default function HabitList() {
     setEditing(null);
   };
 
-  // ✅ UI rendering
+  // UI rendering
   return (
     <div className="habit-container fade-in glass-card">
       <h2 className="glow">Your Habits</h2>
@@ -177,7 +186,9 @@ export default function HabitList() {
             <div>
               <label className="field-label">📅 Day</label>
               <select
-                onChange={(e) => setCustom((prev) => `${prev || ""}-${e.target.value}`)}
+                onChange={(e) =>
+                  setCustom((prev) => `${prev || ""}-${e.target.value}`)
+                }
                 className="glow-select"
               >
                 <option value="">Select</option>
@@ -206,7 +217,13 @@ export default function HabitList() {
 
         <div className="actions">
           <button type="submit" disabled={loading} className="btn-glow">
-            {loading ? <span className="btn-spinner" /> : editing ? "Update Habit" : "Add Habit"}
+            {loading ? (
+              <span className="btn-spinner" />
+            ) : editing ? (
+              "Update Habit"
+            ) : (
+              "Add Habit"
+            )}
           </button>
           {editing && (
             <button type="button" className="btn-cancel" onClick={resetForm}>
@@ -218,15 +235,16 @@ export default function HabitList() {
 
       <ul className="habit-list">
         {habits.map((h) => (
-          <li key={h.id} className={`habit-item slide-up ${h.completed ? "completed" : ""}`}>
+          <li
+            key={h.id}
+            className={`habit-item slide-up ${h.completed ? "completed" : ""}`}
+          >
             <div className="item-left">
               <button
                 className={`check ${h.completed ? "active" : ""}`}
                 onClick={() => handleToggle(h.id)}
                 title="Mark as done"
-              >
-                
-              </button>
+              />
               <div>
                 <div className="title">{h.name}</div>
                 {h.description && <div className="note">{h.description}</div>}
@@ -237,8 +255,12 @@ export default function HabitList() {
             </div>
             <div className="item-actions">
               <span className="streak">🔥 {h.streak || 0}</span>
-              <button className="edit" onClick={() => handleEdit(h)}>✏️</button>
-              <button className="del" onClick={() => handleDelete(h.id)}>🗑️</button>
+              <button className="edit" onClick={() => handleEdit(h)}>
+                ✏️
+              </button>
+              <button className="del" onClick={() => handleDelete(h.id)}>
+                🗑️
+              </button>
             </div>
           </li>
         ))}

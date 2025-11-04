@@ -1,16 +1,23 @@
 import axios from "axios";
 import { supabase } from "../supabase/supabaseClient";
 
-const API = axios.create({ baseURL: "http://localhost:8080" });
+// Create a reusable axios instance
+// Uses environment variable for flexibility across dev/prod
+const API = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+});
 
+// Attach Supabase auth token to every outgoing request
 API.interceptors.request.use(async (config) => {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
-// ✅ Backend endpoints
+// Habit and profile API endpoints
 export const getProfile = () => API.get("/profile");
 export const getHabits = () => API.get("/habits");
 export const createHabit = (habit) => API.post("/habits", habit);
