@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getHabits, createHabit, updateHabit, deleteHabit, toggleHabit } from "../api/api";
 import { useToast } from "../context/ToastContext";
 import "./Habits.css";
+import useHabitReminder from "../hooks/useHabitReminder";
+
 
 export default function HabitList() {
   const [habits, setHabits] = useState([]);
@@ -30,31 +32,11 @@ export default function HabitList() {
       .catch((err) => console.error("Error fetching habits:", err));
   }, []);
 
-  // 🕐 Background reminder checks
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      habits.forEach((habit) => {
-        if (!habit.frequency) return;
-        const name = habit.name || "Unnamed habit";
+  useHabitReminder(habits, async () => {
+  const res = await getHabits();
+  setHabits(res.data);
+});
 
-        const notify = (title, body) => {
-          if (Notification.permission === "granted") {
-            new Notification(title, { body, icon: "/icons/reminder.png" });
-          } else toast.push(body, "success");
-        };
-
-        if (habit.frequency === "1m") notify("⏰ Habit Reminder", `Time to: ${name}`);
-        if (habit.frequency === "1h" && now.getMinutes() === 0)
-          notify("⏰ Hourly Reminder", `It's time for your hourly habit: ${name}`);
-        if (habit.frequency === "1d" && now.getHours() === 9 && now.getMinutes() === 0)
-          notify("🌅 Daily Reminder", `Good morning! Don’t forget: ${name}`);
-        if (habit.frequency === "1w" && now.getDay() === 1 && now.getHours() === 9 && now.getMinutes() === 0)
-          notify("📅 Weekly Reminder", `Weekly check-in: ${name}`);
-      });
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [habits]);
 
   const getBadgeClass = (f) => {
     if (f.includes("m")) return "min";
@@ -120,6 +102,17 @@ export default function HabitList() {
       toast.push("Could not toggle habit", "error");
     }
   };
+
+  useEffect(() => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "REFRESH_HABITS") {
+        getHabits().then((res) => setHabits(res.data));
+      }
+    });
+  }
+}, []);
+
 
   const handleEdit = (habit) => {
     setEditing(habit);

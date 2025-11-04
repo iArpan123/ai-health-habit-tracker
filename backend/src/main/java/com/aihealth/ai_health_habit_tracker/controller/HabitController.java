@@ -2,6 +2,7 @@ package com.aihealth.ai_health_habit_tracker.controller;
 
 import com.aihealth.ai_health_habit_tracker.entity.Habit;
 import com.aihealth.ai_health_habit_tracker.service.HabitService;
+import com.aihealth.ai_health_habit_tracker.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -15,6 +16,7 @@ import java.util.List;
 public class HabitController {
 
     private final HabitService habitService;
+    private final NotificationService notificationService;
 
     // ✅ Fetch user habits
     @GetMapping
@@ -58,4 +60,33 @@ public class HabitController {
         Habit habit = habitService.toggleHabit(id, email);
         return ResponseEntity.ok(habit);
     }
+
+    @PatchMapping("/{id}/snooze")
+    public ResponseEntity<?> snooze(@PathVariable Long id) {
+        return ResponseEntity.ok(habitService.snoozeHabit(id, 10)); // 10 minutes
+    }
+
+    @PatchMapping("/{id}/skip")
+    public ResponseEntity<?> skip(@PathVariable Long id) {
+        habitService.skipHabit(id);
+        return ResponseEntity.ok("Skipped");
+    }
+
+    // ✅ Temporary endpoint to test push notifications manually
+    @GetMapping("/{id}/test-notification")
+    public ResponseEntity<String> testNotification(@PathVariable Long id) {
+        try {
+            Habit habit = habitService.getHabitById(id);
+            if (habit == null) return ResponseEntity.notFound().build();
+
+            // Manually send a notification
+            notificationService.sendHabitReminder(habit);
+            return ResponseEntity.ok("✅ Test notification sent for habit: " + habit.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("❌ Failed to send test notification");
+        }
+    }
+
+
 }

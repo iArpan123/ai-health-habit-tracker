@@ -29,4 +29,7 @@ public class Habit {
     private boolean active = true;
 
     private Instant createdAt;
+    private Instant nextReminderAt;
+    private boolean notificationSent = false;
+
 }
