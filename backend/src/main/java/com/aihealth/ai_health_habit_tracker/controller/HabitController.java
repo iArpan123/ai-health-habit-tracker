@@ -18,14 +18,14 @@ public class HabitController {
     private final HabitService habitService;
     private final NotificationService notificationService;
 
-    // ✅ Fetch user habits
+    // Get all habits for the authenticated user
     @GetMapping
     public List<Habit> getHabits(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt) {
         String email = jwt.getClaim("email");
         return habitService.getHabits(email);
     }
 
-    // ✅ Add new habit
+    // Create a new habit
     @PostMapping
     public Habit addHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
                           @RequestBody Habit habit) {
@@ -33,7 +33,7 @@ public class HabitController {
         return habitService.createHabit(email, habit);
     }
 
-    // ✅ Update habit
+    // Update an existing habit
     @PutMapping("/{id}")
     public ResponseEntity<Habit> updateHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
                                              @PathVariable Long id,
@@ -43,7 +43,7 @@ public class HabitController {
         return ResponseEntity.ok(habit);
     }
 
-    // ✅ Delete habit
+    // Delete a specific habit
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
                                             @PathVariable Long id) {
@@ -52,7 +52,7 @@ public class HabitController {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ Toggle habit completion
+    // Toggle completion status for a habit
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<Habit> toggleHabit(@org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt,
                                              @PathVariable Long id) {
@@ -61,32 +61,31 @@ public class HabitController {
         return ResponseEntity.ok(habit);
     }
 
+    // Snooze a habit for a short duration (e.g., 10 minutes)
     @PatchMapping("/{id}/snooze")
     public ResponseEntity<?> snooze(@PathVariable Long id) {
-        return ResponseEntity.ok(habitService.snoozeHabit(id, 10)); // 10 minutes
+        return ResponseEntity.ok(habitService.snoozeHabit(id, 10));
     }
 
+    // Skip a habit (mark as intentionally skipped)
     @PatchMapping("/{id}/skip")
     public ResponseEntity<?> skip(@PathVariable Long id) {
         habitService.skipHabit(id);
         return ResponseEntity.ok("Skipped");
     }
 
-    // ✅ Temporary endpoint to test push notifications manually
+    // Manual test endpoint for push notifications
     @GetMapping("/{id}/test-notification")
     public ResponseEntity<String> testNotification(@PathVariable Long id) {
         try {
             Habit habit = habitService.getHabitById(id);
-            if (habit == null) return ResponseEntity.notFound().build();
-
-            // Manually send a notification
+            if (habit == null) {
+                return ResponseEntity.notFound().build();
+            }
             notificationService.sendHabitReminder(habit);
-            return ResponseEntity.ok("✅ Test notification sent for habit: " + habit.getName());
+            return ResponseEntity.ok("Test notification sent for habit: " + habit.getName());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("❌ Failed to send test notification");
+            return ResponseEntity.internalServerError().body("Failed to send test notification");
         }
     }
-
-
 }

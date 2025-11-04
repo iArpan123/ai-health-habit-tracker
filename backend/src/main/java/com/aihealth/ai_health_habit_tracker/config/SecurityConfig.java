@@ -19,6 +19,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    // Main security filter configuration
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
         http
@@ -26,26 +27,31 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/push/subscribe", "/habits/*/test-notification").permitAll() // ✅ allow push endpoints
+                        .requestMatchers("/auth/**", "/push/subscribe", "/habits/*/test-notification").permitAll()
                         .requestMatchers("/habits/**", "/profile/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)));
 
-        // Allow H2 console (optional for dev)
+        // Allow same-origin frames (useful for embedded tools or admin consoles)
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
         return http.build();
     }
 
+    // JWT decoder setup (secret should come from environment variables)
     @Bean
     public JwtDecoder jwtDecoder() {
-        String secret = "75PAFXLSGuLEuMdll0NYAOlg1vcvFd6l35nLQ2+173/Acygewmnjoar0gwZqnvDHxv39wxmtpogI/SSnKBBZbA==";
+        String secret = System.getenv("JWT_SECRET");
+        if (secret == null || secret.isEmpty()) {
+            throw new IllegalStateException("Missing JWT_SECRET environment variable");
+        }
         SecretKeySpec key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
 
+    // CORS configuration for frontend integration
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();

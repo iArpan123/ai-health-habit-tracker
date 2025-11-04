@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ReminderScheduler {
     private final HabitRepository habitRepository;
     private final NotificationService notificationService;
 
-    // Runs every minute to check which habits are due
+    // Scheduled task that runs every minute to send due reminders
     @Scheduled(fixedRate = 60000)
     public void checkAndSendReminders() {
         Instant now = Instant.now();
@@ -28,11 +27,12 @@ public class ReminderScheduler {
         for (Habit habit : habits) {
             if (!habit.isActive() || habit.isCompleted()) continue;
 
-            if (habit.getNextReminderAt() != null &&
-                    habit.getNextReminderAt().isBefore(now) &&
-                    !habit.isNotificationSent()) {
+            boolean isReminderDue = habit.getNextReminderAt() != null
+                    && habit.getNextReminderAt().isBefore(now)
+                    && !habit.isNotificationSent();
 
-                log.info("🔔 Sending reminder for habit {}", habit.getName());
+            if (isReminderDue) {
+                log.info("Sending reminder for habit: {}", habit.getName());
                 notificationService.sendHabitReminder(habit);
 
                 habit.setNotificationSent(true);
@@ -40,5 +40,4 @@ public class ReminderScheduler {
             }
         }
     }
-
 }

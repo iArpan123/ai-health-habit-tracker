@@ -11,8 +11,9 @@ public class AiController {
 
     private final AiAnalysisService aiService;
 
+    // Endpoint to analyze user habits by email
     @GetMapping("/analyze/{email}")
     public String analyzeHabits(@PathVariable String email) {
-        return aiService.analyzeUserHabits(email);
+        return aiService.analyzeHabits(email);
     }
 }

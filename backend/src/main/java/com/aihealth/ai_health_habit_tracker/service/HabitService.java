@@ -17,12 +17,12 @@ public class HabitService {
     private final HabitRepository habitRepository;
     private final HabitActionLogRepository logRepository;
 
-    // ✅ Fetch all habits for a specific user
+    // Retrieve all habits belonging to a user
     public List<Habit> getHabits(String email) {
         return habitRepository.findByUserEmail(email);
     }
 
-    // ✅ Create new habit
+    // Create a new habit for the specified user
     public Habit createHabit(String email, Habit habit) {
         habit.setUserEmail(email);
         habit.setActive(true);
@@ -30,7 +30,7 @@ public class HabitService {
         return habitRepository.save(habit);
     }
 
-    // ✅ Update existing habit
+    // Update habit details if the user owns it
     public Habit updateHabit(String email, Long id, Habit updated) {
         Habit existing = habitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habit not found"));
@@ -49,7 +49,7 @@ public class HabitService {
         return habitRepository.save(existing);
     }
 
-    // ✅ Delete habit
+    // Delete a habit if it belongs to the current user
     public void deleteHabit(Long id, String email) {
         Habit habit = habitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habit not found"));
@@ -61,7 +61,7 @@ public class HabitService {
         habitRepository.delete(habit);
     }
 
-    // ✅ Toggle habit completion (and log it)
+    // Toggle habit completion and log the action
     public Habit toggleHabit(Long id, String email) {
         Habit habit = habitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habit not found"));
@@ -87,30 +87,34 @@ public class HabitService {
         return habitRepository.save(habit);
     }
 
-    // ✅ Snooze habit
+    // Snooze habit reminder for the specified number of minutes
     public Habit snoozeHabit(Long id, int minutes) {
-        Habit h = habitRepository.findById(id).orElseThrow();
-        h.setNextReminderAt(Instant.now().plusSeconds(minutes * 60));
+        Habit h = habitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Habit not found"));
+
+        h.setNextReminderAt(Instant.now().plusSeconds(minutes * 60L));
         h.setNotificationSent(false);
-        logAction(h, h.getUserEmail(), "snooze", "User snoozed the reminder by " + minutes + " min");
+        logAction(h, h.getUserEmail(), "snooze", "User snoozed the reminder by " + minutes + " minutes");
         return habitRepository.save(h);
     }
 
-    // ✅ Skip habit
+    // Skip a habit temporarily and schedule the next reminder
     public void skipHabit(Long id) {
-        Habit h = habitRepository.findById(id).orElseThrow();
+        Habit h = habitRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Habit not found"));
+
         h.setNotificationSent(false);
         h.setNextReminderAt(calculateNextReminder(h.getFrequency(), Instant.now()));
-        logAction(h, h.getUserEmail(), "skip", "User skipped the habit for now");
+        logAction(h, h.getUserEmail(), "skip", "User skipped the habit");
         habitRepository.save(h);
     }
 
-    // ✅ Get habit by ID
+    // Retrieve a single habit by its ID
     public Habit getHabitById(Long id) {
         return habitRepository.findById(id).orElse(null);
     }
 
-    // ✅ Private helper
+    // Record a user action (e.g., done, skip, snooze)
     private void logAction(Habit habit, String email, String action, String note) {
         HabitActionLog log = HabitActionLog.builder()
                 .habitId(habit.getId())
@@ -122,6 +126,7 @@ public class HabitService {
         logRepository.save(log);
     }
 
+    // Calculate next reminder time based on habit frequency
     private Instant calculateNextReminder(String freq, Instant baseTime) {
         return switch (freq) {
             case "1m" -> baseTime.plusSeconds(60);

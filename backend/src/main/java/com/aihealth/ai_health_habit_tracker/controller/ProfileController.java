@@ -9,6 +9,7 @@ import java.util.Map;
 @RestController
 public class ProfileController {
 
+    // Returns basic profile details from the authenticated user's JWT
     @GetMapping("/profile")
     public Map<String, Object> getProfile(@AuthenticationPrincipal Jwt jwt) {
         return Map.of(

@@ -13,15 +13,18 @@ public class PushController {
 
     private final PushSubscriptionRepository repo;
 
+    // Register a new push notification subscription for a user
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(@RequestBody PushSubscription sub) {
         if (sub.getUserEmail() == null || sub.getEndpoint() == null) {
             return ResponseEntity.badRequest().body("Missing userEmail or endpoint");
         }
 
+        // If an existing subscription with this endpoint exists, remove it first
         repo.findByEndpoint(sub.getEndpoint()).ifPresent(repo::delete);
+
+        // Save the new subscription
         repo.save(sub);
-        System.out.println("✅ Push subscription saved for: " + sub.getUserEmail());
-        return ResponseEntity.ok("Subscription saved");
+        return ResponseEntity.ok("Subscription saved successfully");
     }
 }
